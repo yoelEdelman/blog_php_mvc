@@ -7,53 +7,46 @@ class Articles_manager extends \Manager {
 
     public function delete_ac($article_id){
         $db = $this->db_connect();
-
         $query = $db->prepare('DELETE FROM articles_categories WHERE article_id = ?');
-        $result = $query->execute([$article_id]);
+        $query->execute([$article_id]);
     }
 
     public function delete_article($article_id){
         $db = $this->db_connect();
-
         $query = $db->prepare('DELETE FROM article WHERE id = ?');
-        $result = $query->execute([$article_id]);
+        return $result = $query->execute([$article_id]);
     }
 
     public function articles_list(){
         $db = $this->db_connect();
-
         // on recupere les infos de la table article a afficher
         $query = $db->query('SELECT id, title, is_published FROM article ORDER BY published_at DESC ');
-
         return $articles = $query->fetchAll();
     }
 
-
-
-
-
-
     public function categories_list(){
         $db = $this->db_connect();
-
         // pour afficher les categories du menu select
         $query = $db->query('SELECT * FROM category');
-
         return $categories = $query->fetchAll();
     }
 
     public function article_info($article_id){
         $db = $this->db_connect();
-
         $query_articles = $db->prepare('SELECT * FROM article WHERE id = ?');
         $query_articles->execute([$article_id]);
-
         return $article = $query_articles->fetch();
+    }
+
+    public function selected_articles($article_id){
+        $db = $this->db_connect();
+        $query = $db->prepare('SELECT * FROM articles_categories WHERE article_id = ?');
+        $query->execute([$article_id]);
+        return $selected = $query->fetchAll();
     }
 
     public function update_article($categories, $published_at, $title, $summary, $content, $img, $is_published, $article_id, $unlink_article_img){
         $db = $this->db_connect();
-
         $query = $db->prepare('DELETE FROM articles_categories WHERE article_id = :article_id');
         $query->execute(['article_id' => $article_id]);
 
@@ -98,7 +91,6 @@ class Articles_manager extends \Manager {
 
     public function new_article($categories, $published_at, $title, $summary, $content, $img, $is_published){
         $db = $this->db_connect();
-
         $query_string = 'INSERT INTO article (published_at, title, summary, content, is_published ';
         $query_values = 'VALUES (:published_at, :title, :summary, :content, :is_published';
         $query_parameters = [
@@ -138,9 +130,4 @@ class Articles_manager extends \Manager {
         }
         return $result;
     }
-
-
-
-
-
 }

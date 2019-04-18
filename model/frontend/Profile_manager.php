@@ -13,13 +13,6 @@ class Profile_manager extends Manager {
         return $user = $query_users->fetch();
     }
 
-
-
-
-
-
-
-
     public function update_profile($first_name, $last_name, $mail, $bio, $user_id, $pwd = 'unknown', $pwd_confirm = 'unknown'){
         $db = $this->db_connect();
 
@@ -33,7 +26,6 @@ class Profile_manager extends Manager {
             'biography' => htmlspecialchars($bio),
             'id' => $user_id
         ];
-
         // si le champs password n'est pas vide
         if ($pwd != 'unknown') {
             // on verifie aue les champs password et password_confirm sont identiques
@@ -45,7 +37,6 @@ class Profile_manager extends Manager {
                 $query_parameters['password'] = md5($pwd);
             }
         }
-
         //on fait le update uniquement dans les cas ou le champ password est vide ou qu'il n'est pas vide et qu'il soit identique au champ password_confirm
         if (($pwd == 'unknown') OR ($pwd != 'unknown' AND $pwd == $pwd_confirm)){
 
@@ -56,9 +47,6 @@ class Profile_manager extends Manager {
             $query = $db->prepare($query_string);
 
         }
-
         return $result = $query->execute($query_parameters);
     }
-
-
 }

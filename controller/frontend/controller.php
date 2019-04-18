@@ -1,15 +1,10 @@
 <?php
-
 require_once '././model/frontend/Nav_manager.php';
 require_once '././model/frontend/Articles_manager.php';
 require_once '././model/frontend/Login_register_manager.php';
 require_once '././model/frontend/Profile_manager.php';
 
-//require_once '././model/frontend/model.php';
-
-
-
-
+//tout les articles
 function articles_list($category_id = 'unknown', $limit = 'unknown'){
     $nav = new Nav_manager();
     $categories_list = $nav->nav_list();
@@ -31,12 +26,18 @@ function articles_list($category_id = 'unknown', $limit = 'unknown'){
     require_once '././view/frontend/article_list.php';
 }
 
-
+//article selectioné
 function article(){
     $nav = new Nav_manager();
     $categories_list = $nav->nav_list();
 
     $articles_manager = new Articles_manager();
+
+    //si j'ai reçu article_id ET que c'est un nombre
+    if(!isset($_GET['article_id']) OR !ctype_digit($_GET['article_id'])){
+        header('location:index.php');
+        exit;
+    }
 
     $article = $articles_manager->article($_GET['article_id']);
 
@@ -47,7 +48,6 @@ function article(){
     }
     require '././view/frontend/article.php';
 }
-
 
 function login(){
     $nav = new Nav_manager();
@@ -89,7 +89,6 @@ function login(){
     require_once '././view/frontend/login_register.php';
 }
 
-
 function register(){
     $nav = new Nav_manager();
     $categories_list = $nav->nav_list();
@@ -129,10 +128,7 @@ function register(){
     require_once '././view/frontend/login_register.php';
 }
 
-
-
-
-
+//page profile
 function update_profile(){
     $nav = new Nav_manager();
     $categories_list = $nav->nav_list();
@@ -182,13 +178,3 @@ function update_profile(){
     }
     require '././view/frontend/user_profile.php';
 }
-
-
-
-
-
-
-
-
-
-

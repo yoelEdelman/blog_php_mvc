@@ -19,7 +19,6 @@ class Login_register_manager extends Manager {
 
         $query = $db->prepare('SELECT mail FROM user WHERE mail = ?');
         $query->execute([$email]);
-
         return $mail_exist = $query->fetch();
     }
 

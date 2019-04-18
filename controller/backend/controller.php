@@ -1,39 +1,31 @@
 <?php
-
 require_once '././model/backend/Nav_manager.php';
 require_once '././model/backend/User_manager.php';
 require_once '././model/backend/Categories_manager.php';
 require_once '././model/backend/Articles_manager.php';
-//require_once '././model/backend/User_form_manager.php';
-//require_once '././model/backend/Category_form_manager.php';
-//require_once '././model/backend/Article_form_manager.php';
 
-
-
-//require_once '././model/backend/model.php';
-
-function admin_home(){
-    $nav_manager = new \backend\Nav_manager();
-
+//redirection si pas autorisé
+function security(){
     if(!isset($_SESSION['user']) OR $_SESSION['user']['is_admin'] == 0){
         header('location:../index.php');
         exit;
     }
+}
 
+//home page
+function admin_home(){
+    security();
+    $nav_manager = new \backend\Nav_manager();
     $users_quantity = $nav_manager->nav_list_users();
     $categories_quantity = $nav_manager->nav_list_categories();
     $articles_quantity = $nav_manager->nav_list_articles();
-
     require_once '././view/backend/index.php';
 }
 
+//user list page
 function user_list(){
+    security();
     $user_manager = new \backend\User_manager();
-
-    if(!isset($_SESSION['user']) OR $_SESSION['user']['is_admin'] == 0){
-    header('location:../index.php');
-    exit;
-    }
 
     // si user_id est existe on delete tout de la table user ou id est egale a l'id recu en get
     if (isset($_GET['user_id']) AND isset($_GET['action']) AND $_GET['action'] == 'delete'){
@@ -46,18 +38,13 @@ function user_list(){
     $users_quantity = $nav_manager->nav_list_users();
     $categories_quantity = $nav_manager->nav_list_categories();
     $articles_quantity = $nav_manager->nav_list_articles();
-
     require_once '././view/backend/user_list.php';
 }
 
-
+//categories list page
 function category_list(){
+    security();
     $category_manager = new \backend\Categories_manager();
-
-    if(!isset($_SESSION['user']) OR $_SESSION['user']['is_admin'] == 0){
-        header('location:../index.php');
-        exit;
-    }
 
     // si le param category_is existe on suprime tout de la table category la ou id est egale a l'id recu en get
     if (isset($_GET['category_id']) AND isset($_GET['action']) AND $_GET['action'] == 'delete'){
@@ -71,18 +58,13 @@ function category_list(){
     $users_quantity = $nav_manager->nav_list_users();
     $categories_quantity = $nav_manager->nav_list_categories();
     $articles_quantity = $nav_manager->nav_list_articles();
-
     require_once '././view/backend/category_list.php';
 }
 
-
+//articles list page
 function admin_articles_list(){
+    security();
     $article_manager = new \backend\Articles_manager();
-
-    if(!isset($_SESSION['user']) OR $_SESSION['user']['is_admin'] == 0){
-        header('location:../index.php');
-        exit;
-    }
 
     // si le param article_id existe en url on suprime tout de la table article la ou id est egale a l'id recu en get
     if (isset($_GET['article_id']) AND isset($_GET['action']) AND $_GET['action'] == 'delete'){
@@ -96,18 +78,13 @@ function admin_articles_list(){
     $users_quantity = $nav_manager->nav_list_users();
     $categories_quantity = $nav_manager->nav_list_categories();
     $articles_quantity = $nav_manager->nav_list_articles();
-
     require_once '././view/backend/article_list.php';
 }
 
-
+//user form page
 function user_form(){
+    security();
     $user_manager = new \backend\User_manager();
-
-    if(!isset($_SESSION['user']) OR $_SESSION['user']['is_admin'] == 0){
-        header('location:../index.php');
-        exit;
-    }
 
     $warnings = [];
 
@@ -126,7 +103,6 @@ function user_form(){
         else{
             //  si $_POST['update'] existe donc on met a jour l'utilisateur en db
             if (isset($_POST['update'])){
-
                 $result = $user_manager->update_user($_POST['first_name'], $_POST['last_name'], $_POST['email'], $_POST['password'], $_POST['bio'], $_POST['is_admin'], $_POST['user_id']);
 
                 if($result){
@@ -166,23 +142,17 @@ function user_form(){
         $user['biography'] = $_POST['bio'];
         $user['is_admin'] = $_POST['is_admin'];
     }
-
     $nav_manager = new \backend\Nav_manager();
     $users_quantity = $nav_manager->nav_list_users();
     $categories_quantity = $nav_manager->nav_list_categories();
     $articles_quantity = $nav_manager->nav_list_articles();
-
     require_once '././view/backend/user_form.php';
 }
 
-
+//category form page
 function category_form(){
+    security();
     $categories_manager = new \backend\Categories_manager();
-
-    if(!isset($_SESSION['user']) OR $_SESSION['user']['is_admin'] == 0){
-        header('location:../index.php');
-        exit;
-    }
 
     $warnings = [];
 
@@ -199,9 +169,7 @@ function category_form(){
         }
         else{
             if (isset($_FILES['image']) AND ($_FILES['image']['error'] === 0)) {
-
                 $allowed_extensions = ['jpg', 'jpeg', 'gif', 'png'];
-
                 $my_file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
 
                 if(!$my_file_extension){
@@ -215,7 +183,6 @@ function category_form(){
                         $new_file_name = rand().time() . $_FILES['image']['name'];
                         $destination = '././assets/img/' . $new_file_name;
                     }while(file_exists($destination));
-
                     $result = move_uploaded_file($_FILES['image']['tmp_name'], $destination);
                 }
             }
@@ -264,26 +231,22 @@ function category_form(){
         $category['description'] = $_POST['description'];
         $image = $_FILES['image'];
     }
-
     $nav_manager = new \backend\Nav_manager();
     $users_quantity = $nav_manager->nav_list_users();
     $categories_quantity = $nav_manager->nav_list_categories();
     $articles_quantity = $nav_manager->nav_list_articles();
-
     require_once '././view/backend/category_form.php';
 }
 
-
+//article form page
 function article_form(){
+    security();
     $articles_manager = new \backend\Articles_manager();
-
-    if(!isset($_SESSION['user']) OR $_SESSION['user']['is_admin'] == 0){
-        header('location:../index.php');
-        exit;
-    }
 
     // pour afficher les categories du menu select
     $categories = $articles_manager->categories_list();
+    $selected = $articles_manager->selected_articles($_GET['article_id']);
+
 
     $warnings = [];
 
@@ -300,9 +263,7 @@ function article_form(){
         }
         else{
             if (isset($_FILES['image']) AND ($_FILES['image']['error'] === 0)) {
-
                 $allowed_extensions = ['jpg', 'jpeg', 'gif', 'png'];
-
                 $my_file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
 
                 if(!in_array($my_file_extension , $allowed_extensions)){
@@ -316,16 +277,13 @@ function article_form(){
                         $new_file_name = rand().time() . $_FILES['image']['name'];
                         $destination = '././assets/img/' . $new_file_name;
                     }while(file_exists($destination));
-
                     $result = move_uploaded_file($_FILES['image']['tmp_name'], $destination);
                 }
             }
-
             // si le tableau $warnings est vide ( qu'il ny a aucune erreur )
             if (empty($warnings)){
                 // si $_POST['update'] existe il s'agit d'un nouvelle article donc on insert l'article en db
                 if (isset($_POST['update'])){
-
                     $result = $articles_manager->update_article($_POST['categories'], $_POST['published_at'], $_POST['title'], $_POST['summary'], $_POST['content'], $new_file_name, $_POST['is_published'], $_POST['article_id'], $article['image']);
 
                     if($result){
@@ -359,16 +317,10 @@ function article_form(){
         $article['content'] = $_POST['content'];
         $image = $_FILES['image'];
         $article['is_published'] = $_POST['is_published'];
-        // pour plus tard
-        //if (isset($_GET['article_id'])){
-        //    $category['id'] = $_POST['categories'];
-        //}
     }
-
     $nav_manager = new \backend\Nav_manager();
     $users_quantity = $nav_manager->nav_list_users();
     $categories_quantity = $nav_manager->nav_list_categories();
     $articles_quantity = $nav_manager->nav_list_articles();
-
     require_once '././view/backend/article_form.php';
 }

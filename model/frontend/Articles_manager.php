@@ -70,8 +70,6 @@ class Articles_manager extends Manager{
             ON a_c.category_id = c.id
             WHERE a.id = ? ');
         $query->execute([$article_id]);
-
         return $article = $query->fetch();
     }
-
 }

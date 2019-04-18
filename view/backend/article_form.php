@@ -1,5 +1,3 @@
-<?php require_once '././_tools.php'; ?>
-
 <?php $title = 'Administration des articles - Mon premier blog !'; ?>
 <?php ob_start(); ?>
 <body class="index-body">
@@ -70,15 +68,14 @@
                                 <label for="categories"> Catégorie <b class="text-danger">*</b></label>
                                 <select multiple class="form-control" name="categories[]" id="categories" multiple="multiple">
                                     <?php foreach($categories as $key => $category): ?>
-                                        <?php
-                                        $query = $db->prepare('SELECT * FROM articles_categories WHERE article_id = ? AND category_id = ?');
-                                        $query->execute([
-                                            $_GET['article_id'],
-                                            $category['id']
-                                        ]);
-                                        $selected = $query->fetch();
-                                        ?>
-                                        <option value="<?= $category['id'];?>" <?= (isset($_GET['article_id']) AND !empty($selected)) ? "selected" : "" ; ?>><?= $category['name']; ?></option>
+                                        <option value="<?= $category['id'];?>"
+                                            <?php foreach($selected as $keys => $select): ?>
+                                                <?php if (isset($_GET['article_id']) AND in_array($category['id'],$select)): ?>
+                                                    selected="selected"
+                                                    <?php break; ?>
+                                                <?php endif;?>
+                                            <?php endforeach; ?>
+                                        ><?= $category['name']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
